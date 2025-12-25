@@ -8,29 +8,26 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL].filter(
-  Boolean
-);
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://andreeaportofolio.netlify.app",
+];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error("CORS not allowed"));
     },
-    methods: ["GET", "POST", "OPTIONS"],
+    methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
 );
 
-app.options("/api/contact", cors());
-
 app.use(express.json());
+
+app.options("/api/contact", cors());
 
 app.post("/api/contact", async (req, res) => {
   try {
@@ -63,5 +60,5 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log("Server running on", PORT));
