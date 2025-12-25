@@ -21,12 +21,14 @@ app.post("/api/contact", async (req, res) => {
       [name, email, message]
     );
 
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: "Portfolio <onboarding@resend.dev>",
       to: process.env.EMAIL_TO,
       subject: "New portfolio message",
       text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
     });
+
+    console.log("Resend result:", result);
 
     res.status(200).json({ success: true });
   } catch (err) {
