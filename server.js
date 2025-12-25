@@ -15,9 +15,13 @@ const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL].filter(
 app.use(
   cors({
     origin: allowedOrigins,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
   })
 );
+
+// 🔥 IMPORTANT: răspunde la preflight
+app.options("*", cors());
 
 app.use(express.json());
 
@@ -42,13 +46,7 @@ app.post("/api/contact", async (req, res) => {
       from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_TO,
       subject: "New message from your portfolio 💌",
-      text: `
-Name: ${name}
-Email: ${email}
-
-Message:
-${message}
-      `,
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
     });
 
     res.status(200).json({ success: true });
