@@ -14,11 +14,21 @@ const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL].filter(
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
   })
 );
+
+app.options("/api/contact", cors());
 
 app.use(express.json());
 
