@@ -40,20 +40,20 @@ app.post("/api/contact", async (req, res) => {
       [name, email, message]
     );
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    //   const transporter = nodemailer.createTransport({
+    //     service: "gmail",
+    //     auth: {
+    //       user: process.env.EMAIL_USER,
+    //       pass: process.env.EMAIL_PASS,
+    //     },
+    //   });
 
-    await transporter.sendMail({
-      from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_TO,
-      subject: "New message from your portfolio 💌",
-      text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
-    });
+    //   await transporter.sendMail({
+    //     from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
+    //     to: process.env.EMAIL_TO,
+    //     subject: "New message from your portfolio 💌",
+    //     text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+    //   });
 
     res.status(200).json({ success: true });
   } catch (err) {
