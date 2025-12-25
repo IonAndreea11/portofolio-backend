@@ -1,35 +1,16 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { pool } from "./db.js";
 
 dotenv.config();
 
 const app = express();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://andreeaportofolio.netlify.app",
-  "https://694d5596f2ba810d6ce8214c--andreeaportofolio.netlify.app",
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed"));
-      }
-    },
-    methods: ["GET", "POST"],
-  })
-);
-
+app.use(cors());
 app.use(express.json());
-
-app.options("/api/contact", cors());
 
 app.post("/api/contact", async (req, res) => {
   try {
@@ -40,30 +21,18 @@ app.post("/api/contact", async (req, res) => {
       [name, email, message]
     );
 
-    //   const transporter = nodemailer.createTransport({
-    //     service: "gmail",
-    //     auth: {
-    //       user: process.env.EMAIL_USER,
-    //       pass: process.env.EMAIL_PASS,
-    //     },
-    //   });
-
-    //   await transporter.sendMail({
-    //     from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
-    //     to: process.env.EMAIL_TO,
-    //     subject: "New message from your portfolio 💌",
-    //     text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
-    //   });
+    await resend.emails.send({
+      from: "Portfolio <onboarding@resend.dev>",
+      to: process.env.EMAIL_TO,
+      subject: "New portfolio message",
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+    });
 
     res.status(200).json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false });
   }
-});
-
-app.get("/api/contact", (req, res) => {
-  res.json({ status: "API is alive " });
 });
 
 const PORT = process.env.PORT || 8080;
