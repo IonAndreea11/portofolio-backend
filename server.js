@@ -20,9 +20,6 @@ app.use(
   })
 );
 
-// 🔥 IMPORTANT: răspunde la preflight
-app.options("*", cors());
-
 app.use(express.json());
 
 app.post("/api/contact", async (req, res) => {
