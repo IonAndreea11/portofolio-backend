@@ -17,11 +17,17 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error("CORS not allowed"));
+
+      if (
+        origin.includes("netlify.app") ||
+        origin === "http://localhost:3000"
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS not allowed"));
     },
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
+    methods: ["GET", "POST", "OPTIONS"],
   })
 );
 
