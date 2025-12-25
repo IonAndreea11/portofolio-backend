@@ -3,14 +3,23 @@ import cors from "cors";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import { pool } from "./db.js";
-import path from "path";
-import { fileURLToPath } from "url";
 
 dotenv.config();
-const app = express();
-app.use(cors());
-app.use(express.json());
 
+const app = express();
+
+const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL].filter(
+  Boolean
+);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+  })
+);
+
+app.use(express.json());
 
 app.post("/api/contact", async (req, res) => {
   try {
@@ -34,32 +43,20 @@ app.post("/api/contact", async (req, res) => {
       to: process.env.EMAIL_TO,
       subject: "New message from your portfolio 💌",
       text: `
-        You have received a new message from your portfolio contact form:
+Name: ${name}
+Email: ${email}
 
-        Name: ${name}
-        Email: ${email}
-        Message:
-        ${message}
+Message:
+${message}
       `,
     });
 
-    res.status(200).json({ success: true, message: "Email sent successfully!" });
+    res.status(200).json({ success: true });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Error sending message." });
+    res.status(500).json({ success: false });
   }
 });
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-app.use(express.static(path.join(__dirname, "../frontend/build")));
-
-app.use((req, res, next) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
-});
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
